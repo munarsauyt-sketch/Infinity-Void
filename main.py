@@ -1,16 +1,30 @@
-# This is a sample Python script.
+from fastapi import FastAPI, HTTPException
+from typing import List
+from schemas import UserCreate, RoomCreate, BookingCreate
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+app = FastAPI()
 
+db = {
+    "users": [],
+    "rooms": [
+        {"id": 1, "room_number": 101, "type": "Lux", "price": 25000, "is_available": True}
+    ],
+    "bookings": []
+}
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+@app.get("/")
+def home():
+    return {"message": "Қонақүй жүйесі жұмыс істеп тұр!"}
 
+@app.get("/rooms")
+def get_rooms():
+    return db["rooms"]
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+@app.post("/bookings")
+def create_booking(booking: BookingCreate):
+    db["bookings"].append(booking.dict())
+    return {"message": "Бронь сәтті жасалды!", "data": booking}
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+@app.delete("/bookings/{booking_id}")
+def delete_booking(booking_id: int):
+    return {"message": f"ID {booking_id} бойынша бронь жойылды"}
