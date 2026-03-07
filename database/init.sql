@@ -1,4 +1,3 @@
--- Users (Пайдаланушылар) кестесі
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
@@ -7,7 +6,6 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Rooms (Бөлмелер) кестесі
 CREATE TABLE rooms (
     id SERIAL PRIMARY KEY,
     room_number INT UNIQUE NOT NULL,
@@ -16,7 +14,6 @@ CREATE TABLE rooms (
     is_available BOOLEAN DEFAULT TRUE
 );
 
--- Bookings (Брондау) кестесі
 CREATE TABLE bookings (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(id),

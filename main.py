@@ -1,10 +1,11 @@
 from fastapi import FastAPI, HTTPException, Depends
-from sqlalchemy import create_engine, Column, Integer, String, Boolean, Float, Date, ForeignKey, text
+from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import create_engine, Column, Integer, String, Boolean, Float, Date, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session, relationship
-from pydantic import BaseModel, EmailStr, validator
-from passlib.context import CryptContext
-from typing import Optional, List
+from pydantic import BaseModel, validator
+import bcrypt
+from typing import Optional
 from datetime import date
 
 DATABASE_URL = "sqlite:///./hotel.db"
@@ -19,17 +20,17 @@ class User(Base):
     username = Column(String(50), nullable=False)
     email = Column(String(100), unique=True, nullable=False)
     password_hash = Column(String(255), nullable=False)
-    bookings = relationship("Booking", back_populates="user")
+    bookings = relationship("Booking", back_populates="user", cascade="all, delete-orphan")
 
 
 class Room(Base):
     __tablename__ = "rooms"
     id = Column(Integer, primary_key=True, index=True)
     room_number = Column(Integer, unique=True, nullable=False)
-    type = Column(String(20), nullable=False)  # Standard, Lux
+    type = Column(String(20), nullable=False)
     price = Column(Float, nullable=False)
     is_available = Column(Boolean, default=True)
-    bookings = relationship("Booking", back_populates="room")
+    bookings = relationship("Booking", back_populates="room", cascade="all, delete-orphan")
 
 
 class Booking(Base):
@@ -45,8 +46,6 @@ class Booking(Base):
 
 
 Base.metadata.create_all(bind=engine)
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class UserCreate(BaseModel):
@@ -114,6 +113,12 @@ def get_db():
 
 
 app = FastAPI(title="Infinity-Void Hotel API", version="1.0")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
@@ -129,12 +134,10 @@ def get_users(db: Session = Depends(get_db)):
 
 @app.post("/users", status_code=201)
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
-    # Проверка: email уже существует?
     existing = db.query(User).filter(User.email == user.email).first()
     if existing:
         raise HTTPException(status_code=400, detail="Email уже зарегистрирован")
-
-    hashed_pw = pwd_context.hash(user.password)  # Хэшируем пароль!
+    hashed_pw = bcrypt.hashpw(user.password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
     new_user = User(username=user.username, email=user.email, password_hash=hashed_pw)
     db.add(new_user)
     db.commit()
@@ -157,9 +160,15 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="Пользователь не найден")
+    bookings = db.query(Booking).filter(Booking.user_id == user_id).all()
+    for booking in bookings:
+        room = db.query(Room).filter(Room.id == booking.room_id).first()
+        if room:
+            room.is_available = True
+        db.delete(booking)
     db.delete(user)
     db.commit()
-    return {"message": f"Пользователь {user_id} удалён"}
+    return {"message": f"Пользователь {user.username} удалён"}
 
 
 @app.get("/rooms")
@@ -206,6 +215,9 @@ def delete_room(room_id: int, db: Session = Depends(get_db)):
     room = db.query(Room).filter(Room.id == room_id).first()
     if not room:
         raise HTTPException(status_code=404, detail="Комната не найдена")
+    bookings = db.query(Booking).filter(Booking.room_id == room_id).all()
+    for booking in bookings:
+        db.delete(booking)
     db.delete(room)
     db.commit()
     return {"message": f"Комната {room_id} удалена"}
@@ -232,17 +244,13 @@ def create_booking(booking: BookingCreate, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == booking.user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="Пользователь не найден")
-
     room = db.query(Room).filter(Room.id == booking.room_id).first()
     if not room:
         raise HTTPException(status_code=404, detail="Комната не найдена")
     if not room.is_available:
         raise HTTPException(status_code=400, detail="Комната недоступна")
-
-
     days = (booking.check_out - booking.check_in).days
     total = room.price * days
-
     new_booking = Booking(
         user_id=booking.user_id,
         room_id=booking.room_id,
@@ -262,11 +270,9 @@ def delete_booking(booking_id: int, db: Session = Depends(get_db)):
     booking = db.query(Booking).filter(Booking.id == booking_id).first()
     if not booking:
         raise HTTPException(status_code=404, detail="Бронь не найдена")
-
     room = db.query(Room).filter(Room.id == booking.room_id).first()
     if room:
         room.is_available = True
-
     db.delete(booking)
     db.commit()
     return {"message": f"Бронь {booking_id} отменена"}
