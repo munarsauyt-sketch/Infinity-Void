@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Войти — Infinity-Void Hotel</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="logo">Infinity-Void Hotel</a>
+        <div>
+            <a href="rooms.html">Номера</a>
+            <a href="login.html">Войти</a>
+            <a href="register.html">Регистрация</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card" style="max-width: 440px; margin: 3rem auto;">
+            <h2>Вход в систему</h2>
+            <div id="alert"></div>
+            <form id="login-form">
+                <div>
+                    <label>Email</label>
+                    <input type="email" id="email" placeholder="example@mail.com" required>
+                </div>
+                <div>
+                    <label>Пароль</label>
+                    <input type="password" id="password" placeholder="Минимум 6 символов" required>
+                </div>
+                <button type="submit">Войти</button>
+            </form>
+            <p style="margin-top: 1rem; text-align: center;">
+                Нет аккаунта? <a href="register.html">Зарегистрироваться</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const result = await apiLogin(
+                document.getElementById('email').value,
+                document.getElementById('password').value
+            );
+            if (result.user_id) {
+                showAlert('alert', 'Вход выполнен! Перенаправляем...', 'success');
+                setTimeout(() => window.location.href = 'rooms.html', 1000);
+            } else {
+                showAlert('alert', result.detail || 'Ошибка входа', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

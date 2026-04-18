@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinity-Void Hotel</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="logo">Infinity-Void Hotel</a>
+        <div>
+            <a href="rooms.html">Номера</a>
+            <a href="bookings.html">Бронирование</a>
+            <span id="nav-user" class="user-info"></span>
+            <a href="login.html" id="nav-login">Войти</a>
+            <a href="register.html" id="nav-register">Регистрация</a>
+            <a href="#" id="nav-logout" style="display:none" onclick="logout()">Выйти</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="hero">
+            <h1>Infinity-Void Hotel</h1>
+            <p>Комфорт и элегантность в каждом номере. Бронируйте онлайн!</p>
+            <a href="rooms.html" class="btn-gold">Смотреть номера</a>
+            <a href="register.html" class="btn-outline">Зарегистрироваться</a>
+        </div>
+
+        <div class="features">
+            <div class="card">
+                <h3>Стандартные номера</h3>
+                <p>Уютные и функциональные номера для комфортного отдыха по доступной цене.</p>
+            </div>
+            <div class="card">
+                <h3>Люкс номера</h3>
+                <p>Роскошные апартаменты с лучшим видом, полным сервисом и максимальным комфортом.</p>
+            </div>
+            <div class="card">
+                <h3>Онлайн-бронирование</h3>
+                <p>Бронируйте номера легко и быстро. Мгновенное подтверждение и расчёт стоимости.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>updateNav();</script>
+</body>
+</html>
