@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import create_engine, Column, Integer, String, Boolean, Float, Date, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session, relationship
@@ -46,6 +47,11 @@ class Booking(Base):
 
 
 Base.metadata.create_all(bind=engine)
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
 
 
 class UserCreate(BaseModel):
@@ -276,3 +282,14 @@ def delete_booking(booking_id: int, db: Session = Depends(get_db)):
     db.delete(booking)
     db.commit()
     return {"message": f"Бронь {booking_id} отменена"}
+
+
+@app.post("/login")
+def login(creds: LoginRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == creds.email).first()
+    if not user or not bcrypt.checkpw(creds.password.encode("utf-8"), user.password_hash.encode("utf-8")):
+        raise HTTPException(status_code=401, detail="Неверный email или пароль")
+    return {"message": "Вход выполнен", "user_id": user.id, "username": user.username}
+
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
