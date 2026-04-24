@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: infinity-void-hotel
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: infinity-void-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+
+databases:
+  - name: infinity-void-db
+    databaseName: hotel
+    user: hotel_user
+    plan: free
