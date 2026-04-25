@@ -63,7 +63,7 @@ class Booking(Base):
 Base.metadata.create_all(bind=engine)
 
 
-# ---------- Pydantic schemas ----------
+
 
 class UserCreate(BaseModel):
     username: str
@@ -382,3 +382,4 @@ def delete_booking(booking_id: int, db: Session = Depends(get_db)):
     db.delete(booking)
     db.commit()
     return {"message": f"Бронь {booking_id} отменена"}
+

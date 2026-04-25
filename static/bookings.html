@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бронирование — Infinity-Void Hotel</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="logo">Infinity-Void Hotel</a>
+        <div>
+            <a href="rooms.html">Номера</a>
+            <a href="bookings.html">Бронирование</a>
+            <span id="nav-user" class="user-info"></span>
+            <a href="login.html" id="nav-login">Войти</a>
+            <a href="register.html" id="nav-register">Регистрация</a>
+            <a href="#" id="nav-logout" style="display:none" onclick="logout()">Выйти</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card" style="max-width: 520px; margin-bottom: 2rem;">
+            <h2>Создать бронь</h2>
+            <div id="alert"></div>
+            <form id="booking-form">
+                <div>
+                    <label>ID пользователя</label>
+                    <input type="number" id="user_id" placeholder="Ваш ID (см. после входа)" min="1" required>
+                </div>
+                <div>
+                    <label>Комната</label>
+                    <select id="room_id" required>
+                        <option value="">Выберите доступную комнату</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Дата заезда</label>
+                    <input type="date" id="check_in" required>
+                </div>
+                <div>
+                    <label>Дата выезда</label>
+                    <input type="date" id="check_out" required>
+                </div>
+                <button type="submit">Забронировать</button>
+            </form>
+        </div>
+
+        <h2>Все бронирования</h2>
+        <div id="bookings-table"><p>Загрузка...</p></div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        updateNav();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const preselectedRoom = urlParams.get('room_id');
+        const savedUser = JSON.parse(localStorage.getItem('hotel_user') || 'null');
+        if (savedUser) document.getElementById('user_id').value = savedUser.user_id;
+
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('check_in').min = today;
+        document.getElementById('check_out').min = today;
+        document.getElementById('check_in').addEventListener('change', function () {
+            document.getElementById('check_out').min = this.value;
+        });
+
+        async function loadAvailableRooms() {
+            const rooms = await apiGetRooms('');
+            const select = document.getElementById('room_id');
+            select.innerHTML = '<option value="">Выберите доступную комнату</option>';
+            rooms.filter(r => r.is_available).forEach(r => {
+                const opt = document.createElement('option');
+                opt.value = r.id;
+                opt.text = `№${r.room_number} — ${r.type} — ${r.price} ₸/ночь`;
+                if (preselectedRoom && String(r.id) === preselectedRoom) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        async function loadBookings() {
+            const bookings = await apiGetBookings();
+            const container = document.getElementById('bookings-table');
+            if (!Array.isArray(bookings) || bookings.length === 0) {
+                container.innerHTML = '<p>Бронирований нет.</p>';
+                return;
+            }
+            container.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Гость</th>
+                            <th>Комната</th>
+                            <th>Заезд</th>
+                            <th>Выезд</th>
+                            <th>Сумма</th>
+                            <th>Действие</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${bookings.map(b => `
+                            <tr>
+                                <td>${b.id}</td>
+                                <td>${b.user.username}</td>
+                                <td>№${b.room.room_number} (${b.room.type})</td>
+                                <td>${b.check_in}</td>
+                                <td>${b.check_out}</td>
+                                <td>${b.total_price} ₸</td>
+                                <td>
+                                    <button class="btn-danger" onclick="cancelBooking(${b.id})">Отмена</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        async function cancelBooking(id) {
+            if (!confirm('Отменить бронь #' + id + '?')) return;
+            const res = await fetch(`/bookings/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                showAlert('alert', 'Бронь отменена.', 'success');
+                loadBookings();
+                loadAvailableRooms();
+            } else {
+                const data = await res.json();
+                showAlert('alert', data.detail || 'Ошибка', 'error');
+            }
+        }
+
+        document.getElementById('booking-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                user_id: parseInt(document.getElementById('user_id').value),
+                room_id: parseInt(document.getElementById('room_id').value),
+                check_in: document.getElementById('check_in').value,
+                check_out: document.getElementById('check_out').value
+            };
+            const result = await apiCreateBooking(data);
+            if (result.id) {
+                showAlert('alert', `Бронь создана! Итого: ${result.total_price} ₸`, 'success');
+                document.getElementById('booking-form').reset();
+                if (savedUser) document.getElementById('user_id').value = savedUser.user_id;
+                loadBookings();
+                loadAvailableRooms();
+            } else {
+                showAlert('alert', result.detail || 'Ошибка бронирования', 'error');
+            }
+        });
+
+        loadAvailableRooms();
+        loadBookings();
+    </script>
+</body>
+</html>
