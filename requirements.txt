@@ -1,6 +1,0 @@
-fastapi
-uvicorn
-sqlalchemy
-bcrypt
-pydantic
-python-multipart
