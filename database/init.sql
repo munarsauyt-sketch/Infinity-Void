@@ -9,7 +9,7 @@ CREATE TABLE users (
 CREATE TABLE rooms (
     id SERIAL PRIMARY KEY,
     room_number INT UNIQUE NOT NULL,
-    type VARCHAR(20) NOT NULL, -- 'Standard', 'Lux'
+    type VARCHAR(20) NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     is_available BOOLEAN DEFAULT TRUE
 );

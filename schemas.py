@@ -4,13 +4,13 @@ from typing import Optional
 
 class UserCreate(BaseModel):
     username: str = Field(..., min_length=3, max_length=50)
-    email: EmailStr  # Электрондық поштаның дұрыстығын тексереді
-    password: str = Field(..., min_length=8) # Құпия сөз кемі 8 символ
+    email: EmailStr
+    password: str = Field(..., min_length=8)
 
 class RoomCreate(BaseModel):
     room_number: int
     type: str
-    price: float = Field(..., gt=0) # Бағасы 0-ден көп болуы керек
+    price: float = Field(..., gt=0)
     is_available: bool = True
 
 class BookingCreate(BaseModel):
