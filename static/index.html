@@ -1,118 +1,311 @@
 <!DOCTYPE html>
 <html lang="kk">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Infinity-Void Hotel</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
-    :root {
-      --primary: #6C63FF;
-      --primary-dark: #5A52D5;
-      --bg: #0F0F1A;
-      --surface: #1A1A2E;
-      --surface2: #22223B;
-      --border: rgba(255,255,255,0.08);
-      --text: #F0F0FF;
-      --text2: #9090B0;
-      --success: #00D68F;
-      --danger: #FF4D6D;
-      --warning: #FFB020;
-    }
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-    header{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-    .logo{display:flex;align-items:center;gap:10px}
-    .logo-icon{width:36px;height:36px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
-    .logo h1{font-size:1.1rem;font-weight:600}
-    .logo small{font-size:11px;color:var(--text2);display:block}
-    .auth-pill{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12px;color:var(--text2);display:flex;align-items:center;gap:6px}
-    .dot{width:6px;height:6px;border-radius:50%;background:var(--text2)}
-    .auth-pill.logged .dot{background:var(--success)}
-    .auth-pill.logged{color:var(--text)}
-    nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;display:flex;gap:2px}
-    .tab{padding:14px 20px;border:none;background:none;color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;font-family:'Inter',sans-serif}
-    .tab:hover{color:var(--text)}
-    .tab.active{color:var(--primary);border-bottom-color:var(--primary)}
-    .container{max-width:960px;margin:28px auto;padding:0 24px}
-    .section{display:none}
-    .section.active{display:block}
-    .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 24px;margin-bottom:16px}
-    .card-title{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
-    .form-row{display:flex;flex-wrap:wrap;gap:10px}
-    input,select{flex:1 1 160px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:'Inter',sans-serif;transition:border-color .2s}
-    input::placeholder{color:var(--text2)}
-    input:focus,select:focus{outline:none;border-color:var(--primary)}
-    select option{background:var(--surface2)}
-    .btn{padding:10px 20px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .2s;font-family:'Inter',sans-serif}
-    .btn-primary{background:var(--primary);color:#fff}
-    .btn-primary:hover{background:var(--primary-dark);transform:translateY(-1px)}
-    .btn-ghost{background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
-    .btn-ghost:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
-    .btn-danger{background:rgba(255,77,109,.1);color:var(--danger);border:1px solid rgba(255,77,109,.3)}
-    .btn-danger:hover{background:rgba(255,77,109,.2)}
-    .btn-sm{padding:6px 14px;font-size:12px}
-    .status{padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:16px;display:none;border:1px solid transparent}
-    .status.ok{background:rgba(0,214,143,.1);color:var(--success);border-color:rgba(0,214,143,.3);display:block}
-    .status.err{background:rgba(255,77,109,.1);color:var(--danger);border-color:rgba(255,77,109,.3);display:block}
-    .table-wrap{overflow-x:auto}
-    table{width:100%;border-collapse:collapse;font-size:13px}
-    th{padding:10px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border)}
-    td{padding:12px 12px;border-bottom:1px solid var(--border);color:var(--text)}
-    tr:last-child td{border-bottom:none}
-    tr:hover td{background:rgba(255,255,255,.02)}
-    .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
-    .badge-yes{background:rgba(0,214,143,.15);color:var(--success)}
-    .badge-no{background:rgba(255,77,109,.15);color:var(--danger)}
-    .badge-std{background:rgba(108,99,255,.15);color:var(--primary)}
-    .badge-lux{background:rgba(255,176,32,.15);color:var(--warning)}
-    .token-box{margin-top:14px;padding:12px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;font-size:12px;word-break:break-all;color:var(--text2);line-height:1.7;display:none}
-    .token-box b{color:var(--success)}
-    .empty{text-align:center;padding:36px;color:var(--text2);font-size:13px}
-    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-    .col-form{display:flex;flex-direction:column;gap:10px}
-    a{color:var(--primary);text-decoration:none}
-    a:hover{text-decoration:underline}
-    @media(max-width:600px){.two-col{grid-template-columns:1fr}nav{padding:0 12px}.tab{padding:12px 12px;font-size:12px}}
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Infinity-Void Hotel</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --cream: #FAF7F2;
+  --warm-white: #FFFDF9;
+  --gold: #C9A96E;
+  --gold-light: #E8D5B0;
+  --gold-dark: #9A7A4A;
+  --charcoal: #2C2825;
+  --charcoal-light: #4A4540;
+  --muted: #8A8078;
+  --border: #E8E0D4;
+  --success: #5A8A6A;
+  --danger: #8A4A4A;
+  --shadow: rgba(44,40,37,0.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--charcoal);min-height:100vh;font-weight:300}
+
+/* HEADER */
+header{
+  background:var(--warm-white);
+  border-bottom:1px solid var(--border);
+  padding:0 48px;
+  display:flex;align-items:center;justify-content:space-between;
+  height:72px;position:sticky;top:0;z-index:100;
+  box-shadow:0 2px 20px var(--shadow);
+}
+.brand{display:flex;align-items:center;gap:14px}
+.brand-icon{
+  width:42px;height:42px;
+  background:linear-gradient(135deg,var(--gold) 0%,var(--gold-dark) 100%);
+  border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;
+  box-shadow:0 4px 12px rgba(201,169,110,0.3);
+}
+.brand-name{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:600;color:var(--charcoal);letter-spacing:0.5px}
+.brand-sub{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;display:block;margin-top:-2px}
+.auth-badge{
+  display:flex;align-items:center;gap:8px;
+  background:var(--cream);border:1px solid var(--border);
+  border-radius:24px;padding:6px 16px;
+  font-size:12px;color:var(--muted);letter-spacing:0.5px;
+  transition:all .2s;
+}
+.auth-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--border);transition:background .3s}
+.auth-badge.logged{color:var(--charcoal);border-color:var(--gold-light)}
+.auth-badge.logged .dot{background:var(--success)}
+
+/* NAV */
+nav{
+  background:var(--warm-white);
+  border-bottom:1px solid var(--border);
+  padding:0 48px;
+  display:flex;gap:0;
+}
+.tab{
+  padding:16px 24px;border:none;background:none;
+  color:var(--muted);font-size:12px;font-weight:500;
+  cursor:pointer;border-bottom:2px solid transparent;
+  transition:all .2s;font-family:'Jost',sans-serif;
+  letter-spacing:1.5px;text-transform:uppercase;
+  display:flex;align-items:center;gap:8px;
+}
+.tab:hover{color:var(--charcoal)}
+.tab.active{color:var(--gold-dark);border-bottom-color:var(--gold)}
+.tab-icon{font-size:14px}
+
+/* HERO */
+.hero{
+  background:linear-gradient(160deg, var(--charcoal) 0%, #3D3530 60%, #4A4038 100%);
+  padding:56px 48px;
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background-image:radial-gradient(circle at 20% 50%, rgba(201,169,110,0.15) 0%, transparent 60%),
+                   radial-gradient(circle at 80% 20%, rgba(201,169,110,0.08) 0%, transparent 50%);
+}
+.hero-inner{position:relative;z-index:1;max-width:600px}
+.hero-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:16px;display:block}
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:300;color:#fff;line-height:1.1;margin-bottom:12px}
+.hero-title em{color:var(--gold);font-style:italic}
+.hero-desc{font-size:13px;color:rgba(255,255,255,0.5);letter-spacing:0.5px;line-height:1.7}
+
+/* CONTAINER */
+.container{max-width:1000px;margin:32px auto;padding:0 32px}
+.section{display:none}
+.section.active{display:block}
+
+/* CARDS */
+.card{
+  background:var(--warm-white);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:24px 28px;
+  margin-bottom:16px;
+  box-shadow:0 2px 12px var(--shadow);
+}
+.card-label{
+  font-size:9px;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--muted);margin-bottom:18px;
+  padding-bottom:14px;border-bottom:1px solid var(--border);
+}
+
+/* FORM */
+.form-row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+input,select{
+  flex:1 1 160px;
+  padding:10px 14px;
+  background:var(--cream);
+  border:1px solid var(--border);
+  border-radius:6px;
+  color:var(--charcoal);
+  font-size:13px;
+  font-family:'Jost',sans-serif;
+  font-weight:300;
+  transition:border-color .2s,box-shadow .2s;
+  appearance:none;
+}
+input::placeholder{color:var(--muted)}
+input:focus,select:focus{
+  outline:none;
+  border-color:var(--gold);
+  box-shadow:0 0 0 3px rgba(201,169,110,0.12);
+  background:var(--warm-white);
+}
+
+/* BUTTONS */
+.btn{
+  padding:10px 22px;border-radius:6px;
+  font-size:12px;font-weight:500;
+  cursor:pointer;border:none;
+  transition:all .2s;font-family:'Jost',sans-serif;
+  letter-spacing:1px;text-transform:uppercase;
+  white-space:nowrap;
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--gold) 0%,var(--gold-dark) 100%);
+  color:#fff;
+  box-shadow:0 4px 12px rgba(201,169,110,0.3);
+}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(201,169,110,0.4)}
+.btn-ghost{
+  background:transparent;color:var(--muted);
+  border:1px solid var(--border);
+}
+.btn-ghost:hover{color:var(--charcoal);border-color:var(--charcoal-light)}
+.btn-danger{
+  background:transparent;
+  color:var(--danger);
+  border:1px solid rgba(138,74,74,0.3);
+  padding:6px 14px;font-size:11px;
+}
+.btn-danger:hover{background:rgba(138,74,74,0.06)}
+
+/* STATUS */
+.status{
+  padding:12px 18px;border-radius:6px;
+  font-size:12px;margin-bottom:16px;
+  display:none;letter-spacing:0.3px;
+  border-left:3px solid transparent;
+}
+.status.ok{
+  background:rgba(90,138,106,0.08);
+  color:var(--success);
+  border-left-color:var(--success);
+  display:block;
+}
+.status.err{
+  background:rgba(138,74,74,0.08);
+  color:var(--danger);
+  border-left-color:var(--danger);
+  display:block;
+}
+
+/* TABLE */
+.table-wrap{overflow-x:auto;margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{
+  padding:10px 14px;text-align:left;
+  font-size:9px;font-weight:500;color:var(--muted);
+  text-transform:uppercase;letter-spacing:2px;
+  border-bottom:1px solid var(--border);
+}
+td{
+  padding:13px 14px;border-bottom:1px solid var(--border);
+  color:var(--charcoal);transition:background .15s;
+}
+tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:rgba(201,169,110,0.04)}
+
+/* BADGES */
+.badge{
+  display:inline-block;padding:3px 10px;
+  border-radius:3px;font-size:10px;
+  font-weight:500;letter-spacing:0.8px;text-transform:uppercase;
+}
+.badge-yes{background:rgba(90,138,106,0.1);color:var(--success)}
+.badge-no{background:rgba(138,74,74,0.1);color:var(--danger)}
+.badge-std{background:rgba(201,169,110,0.15);color:var(--gold-dark)}
+.badge-lux{background:rgba(44,40,37,0.08);color:var(--charcoal)}
+
+/* TOKEN BOX */
+.token-box{
+  margin-top:16px;padding:14px 18px;
+  background:var(--cream);border:1px solid var(--border);
+  border-radius:6px;font-size:11px;
+  word-break:break-all;color:var(--muted);
+  line-height:1.8;display:none;
+  border-left:3px solid var(--gold);
+}
+.token-box strong{color:var(--success);font-weight:500}
+
+/* EMPTY */
+.empty{
+  text-align:center;padding:40px;
+  color:var(--muted);font-size:13px;
+  letter-spacing:0.5px;
+}
+.empty-icon{font-size:32px;display:block;margin-bottom:8px;opacity:0.4}
+
+/* TWO COL */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.col-form{display:flex;flex-direction:column;gap:10px}
+
+/* ID BADGE */
+.id-num{color:var(--muted);font-size:11px;font-family:'Cormorant Garamond',serif}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:20px 0}
+
+a{color:var(--gold-dark);text-decoration:none}
+a:hover{color:var(--gold)}
+
+@media(max-width:640px){
+  header,nav{padding:0 20px}
+  .hero{padding:36px 20px}
+  .hero-title{font-size:2rem}
+  .container{padding:0 16px}
+  .two-col{grid-template-columns:1fr}
+  .tab{padding:14px 14px;font-size:11px}
+  .tab span.tab-icon{display:none}
+}
+</style>
 </head>
 <body>
 
 <header>
-  <div class="logo">
-    <div class="logo-icon">🏨</div>
+  <div class="brand">
+    <div class="brand-icon">🏨</div>
     <div>
-      <h1>Infinity-Void</h1>
-      <small>Hotel Management System</small>
+      <span class="brand-name">Infinity-Void</span>
+      <span class="brand-sub">Hotel & Reservations</span>
     </div>
   </div>
-  <div class="auth-pill" id="auth-pill">
+  <div class="auth-badge" id="auth-pill">
     <div class="dot"></div>
     <span id="auth-label">Кірілмеген</span>
   </div>
 </header>
 
 <nav>
-  <button class="tab active" onclick="showTab('rooms',this)">🛏 Бөлмелер</button>
-  <button class="tab" onclick="showTab('bookings',this)">📋 Брондаулар</button>
-  <button class="tab" onclick="showTab('auth',this)">🔐 Аутентификация</button>
-  <button class="tab" onclick="showTab('users',this)">👥 Пайдаланушылар</button>
+  <button class="tab active" onclick="showTab('rooms',this)"><span class="tab-icon">🛏</span> Бөлмелер</button>
+  <button class="tab" onclick="showTab('bookings',this)"><span class="tab-icon">📋</span> Брондаулар</button>
+  <button class="tab" onclick="showTab('auth',this)"><span class="tab-icon">🔐</span> Аутентификация</button>
+  <button class="tab" onclick="showTab('users',this)"><span class="tab-icon">👥</span> Пайдаланушылар</button>
 </nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <span class="hero-label">Қонақүй брондау жүйесі</span>
+    <h1 class="hero-title">Infinity-Void<br/><em>Hotel Management</em></h1>
+    <p class="hero-desc">Бөлмелерді басқару, брондау және пайдаланушылар жүйесі</p>
+  </div>
+</div>
 
 <div class="container">
   <div id="status-bar" class="status"></div>
 
+  <!-- ROOMS -->
   <div id="tab-rooms" class="section active">
     <div class="card">
-      <div class="card-title">Іздеу және сүзгілеу</div>
+      <div class="card-label">Іздеу және сүзгілеу</div>
       <div class="form-row">
-        <select id="filter-type"><option value="">Барлық типтер</option><option value="Standard">Standard</option><option value="Lux">Lux</option></select>
-        <select id="filter-avail"><option value="">Кез-келген статус</option><option value="true">Бос</option><option value="false">Бронделген</option></select>
+        <select id="filter-type">
+          <option value="">Барлық типтер</option>
+          <option value="Standard">Standard</option>
+          <option value="Lux">Lux</option>
+        </select>
+        <select id="filter-avail">
+          <option value="">Кез-келген статус</option>
+          <option value="true">Бос</option>
+          <option value="false">Бронделген</option>
+        </select>
         <button class="btn btn-primary" onclick="loadRooms()">Іздеу</button>
       </div>
     </div>
     <div class="card">
-      <div class="card-title">Жаңа бөлме қосу</div>
+      <div class="card-label">Жаңа бөлме қосу</div>
       <div class="form-row">
         <input id="r-num" type="number" placeholder="Бөлме №"/>
         <select id="r-type"><option value="Standard">Standard</option><option value="Lux">Lux</option></select>
@@ -121,29 +314,30 @@
       </div>
     </div>
     <div class="card">
-      <div class="card-title">Бөлмелер тізімі</div>
+      <div class="card-label">Бөлмелер тізімі</div>
       <div class="table-wrap">
         <table id="rooms-table">
-          <thead><tr><th>ID</th><th>Бөлме №</th><th>Тип</th><th>Бағасы</th><th>Статус</th></tr></thead>
-          <tbody><tr><td colspan="5" class="empty">Жүктелуде...</td></tr></tbody>
+          <thead><tr><th>#</th><th>Бөлме №</th><th>Тип</th><th>Бағасы</th><th>Статус</th></tr></thead>
+          <tbody><tr><td colspan="5" class="empty"><span class="empty-icon">🏨</span>Жүктелуде...</td></tr></tbody>
         </table>
       </div>
     </div>
   </div>
 
+  <!-- BOOKINGS -->
   <div id="tab-bookings" class="section">
     <div class="card">
-      <div class="card-title">Сүзгілеу</div>
+      <div class="card-label">Сүзгілеу</div>
       <div class="form-row">
         <input id="f-uid" type="number" placeholder="Пайдаланушы ID"/>
         <input id="f-checkin" type="date"/>
         <input id="f-checkout" type="date"/>
         <button class="btn btn-primary" onclick="loadBookings()">Іздеу</button>
-        <button class="btn btn-ghost" onclick="clearFilters()">✕ Тазарту</button>
+        <button class="btn btn-ghost" onclick="clearFilters()">✕</button>
       </div>
     </div>
     <div class="card">
-      <div class="card-title">Жаңа брондау</div>
+      <div class="card-label">Жаңа брондау</div>
       <div class="form-row">
         <input id="b-uid" type="number" placeholder="Пайдаланушы ID"/>
         <input id="b-rid" type="number" placeholder="Бөлме ID"/>
@@ -153,29 +347,30 @@
       </div>
     </div>
     <div class="card">
-      <div class="card-title">Брондаулар тізімі</div>
+      <div class="card-label">Брондаулар тізімі</div>
       <div class="table-wrap">
         <table id="bookings-table">
-          <thead><tr><th>ID</th><th>Пайдаланушы</th><th>Бөлме</th><th>Check-in</th><th>Check-out</th><th>Сомасы</th><th></th></tr></thead>
-          <tbody><tr><td colspan="7" class="empty">Деректер жоқ</td></tr></tbody>
+          <thead><tr><th>#</th><th>Пайдаланушы</th><th>Бөлме</th><th>Check-in</th><th>Check-out</th><th>Сомасы</th><th></th></tr></thead>
+          <tbody><tr><td colspan="7" class="empty"><span class="empty-icon">📋</span>Деректер жоқ</td></tr></tbody>
         </table>
       </div>
     </div>
   </div>
 
+  <!-- AUTH -->
   <div id="tab-auth" class="section">
     <div class="two-col">
       <div class="card">
-        <div class="card-title">Тіркелу</div>
+        <div class="card-label">Тіркелу</div>
         <div class="col-form">
           <input id="reg-name" type="text" placeholder="Аты"/>
           <input id="reg-email" type="email" placeholder="Email"/>
-          <input id="reg-pass" type="password" placeholder="Құпия сөз (мін. 8)"/>
+          <input id="reg-pass" type="password" placeholder="Құпия сөз (мін. 8 символ)"/>
           <button class="btn btn-primary" onclick="register()">Тіркелу →</button>
         </div>
       </div>
       <div class="card">
-        <div class="card-title">Кіру</div>
+        <div class="card-label">Кіру</div>
         <div class="col-form">
           <input id="login-email" type="email" placeholder="Email"/>
           <input id="login-pass" type="password" placeholder="Құпия сөз"/>
@@ -186,16 +381,17 @@
     </div>
   </div>
 
+  <!-- USERS -->
   <div id="tab-users" class="section">
     <div class="card">
-      <div class="card-title">
+      <div class="card-label" style="display:flex;justify-content:space-between;align-items:center">
         <span>Пайдаланушылар тізімі</span>
-        <button class="btn btn-ghost btn-sm" onclick="loadUsers()">↻ Жаңарту</button>
+        <button class="btn btn-ghost" style="padding:6px 14px;font-size:10px" onclick="loadUsers()">↻ Жаңарту</button>
       </div>
       <div class="table-wrap">
         <table id="users-table">
-          <thead><tr><th>ID</th><th>Аты</th><th>Email</th><th>Брондаулар</th></tr></thead>
-          <tbody><tr><td colspan="4" class="empty">Деректер жоқ</td></tr></tbody>
+          <thead><tr><th>#</th><th>Аты</th><th>Email</th><th>Брондаулар</th></tr></thead>
+          <tbody><tr><td colspan="4" class="empty"><span class="empty-icon">👥</span>Деректер жоқ</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -233,20 +429,28 @@ async function loadRooms(){
   try{
     const rooms=await apiFetch(url);
     document.querySelector('#rooms-table tbody').innerHTML=rooms.length
-      ?rooms.map(r=>`<tr><td style="color:var(--text2)">#${r.id}</td><td><b>${r.room_number}</b></td><td><span class="badge ${r.type==='Lux'?'badge-lux':'badge-std'}">${r.type}</span></td><td>${r.price.toLocaleString()} ₸</td><td><span class="badge ${r.is_available?'badge-yes':'badge-no'}">${r.is_available?'Бос':'Бронделген'}</span></td></tr>`).join('')
-      :'<tr><td colspan="5" class="empty">Бөлмелер табылмады</td></tr>';
+      ?rooms.map(r=>`<tr>
+        <td class="id-num">${r.id}</td>
+        <td><strong>${r.room_number}</strong></td>
+        <td><span class="badge ${r.type==='Lux'?'badge-lux':'badge-std'}">${r.type}</span></td>
+        <td>${r.price.toLocaleString()} ₸</td>
+        <td><span class="badge ${r.is_available?'badge-yes':'badge-no'}">${r.is_available?'Бос':'Бронделген'}</span></td>
+      </tr>`).join('')
+      :'<tr><td colspan="5" class="empty"><span class="empty-icon">🔍</span>Нәтиже жоқ</td></tr>';
   }catch(e){showStatus(e.message,false);}
 }
 async function createRoom(){
   try{
-    await apiFetch('/rooms',{method:'POST',body:JSON.stringify({room_number:+document.getElementById('r-num').value,type:document.getElementById('r-type').value,price:+document.getElementById('r-price').value})});
-    showStatus('✓ Бөлме сәтті қосылды!');loadRooms();
+    await apiFetch('/rooms',{method:'POST',body:JSON.stringify({
+      room_number:+document.getElementById('r-num').value,
+      type:document.getElementById('r-type').value,
+      price:+document.getElementById('r-price').value
+    })});
+    showStatus('✓ Бөлме сәтті қосылды');loadRooms();
   }catch(e){showStatus(e.message,false);}
 }
 function clearFilters(){
-  document.getElementById('f-uid').value='';
-  document.getElementById('f-checkin').value='';
-  document.getElementById('f-checkout').value='';
+  ['f-uid','f-checkin','f-checkout'].forEach(id=>document.getElementById(id).value='');
   loadBookings();
 }
 async function loadBookings(){
@@ -260,33 +464,55 @@ async function loadBookings(){
   try{
     const bookings=await apiFetch(url);
     document.querySelector('#bookings-table tbody').innerHTML=bookings.length
-      ?bookings.map(b=>`<tr><td style="color:var(--text2)">#${b.id}</td><td>${b.user.username} <span style="color:var(--text2);font-size:11px">#${b.user.id}</span></td><td>№${b.room.room_number} <span class="badge ${b.room.type==='Lux'?'badge-lux':'badge-std'}">${b.room.type}</span></td><td>${b.check_in}</td><td>${b.check_out}</td><td><b>${b.total_price?.toLocaleString()} ₸</b></td><td><button class="btn btn-danger btn-sm" onclick="cancelBooking(${b.id})">Бас тарту</button></td></tr>`).join('')
-      :'<tr><td colspan="7" class="empty">Брондаулар жоқ</td></tr>';
+      ?bookings.map(b=>`<tr>
+        <td class="id-num">${b.id}</td>
+        <td>${b.user.username} <span class="id-num">#${b.user.id}</span></td>
+        <td>№${b.room.room_number} <span class="badge ${b.room.type==='Lux'?'badge-lux':'badge-std'}">${b.room.type}</span></td>
+        <td>${b.check_in}</td><td>${b.check_out}</td>
+        <td><strong>${b.total_price?.toLocaleString()} ₸</strong></td>
+        <td><button class="btn btn-danger" onclick="cancelBooking(${b.id})">Бас тарту</button></td>
+      </tr>`).join('')
+      :'<tr><td colspan="7" class="empty"><span class="empty-icon">📭</span>Брондаулар жоқ</td></tr>';
   }catch(e){showStatus(e.message,false);}
 }
 async function createBooking(){
   try{
-    const res=await apiFetch('/bookings',{method:'POST',body:JSON.stringify({user_id:+document.getElementById('b-uid').value,room_id:+document.getElementById('b-rid').value,check_in:document.getElementById('b-in').value,check_out:document.getElementById('b-out').value})});
-    showStatus(`✓ Брондалды! Жалпы сомасы: ${res.total_price?.toLocaleString()} ₸`);
+    const res=await apiFetch('/bookings',{method:'POST',body:JSON.stringify({
+      user_id:+document.getElementById('b-uid').value,
+      room_id:+document.getElementById('b-rid').value,
+      check_in:document.getElementById('b-in').value,
+      check_out:document.getElementById('b-out').value
+    })});
+    showStatus(`✓ Брондалды! Сомасы: ${res.total_price?.toLocaleString()} ₸`);
     loadBookings();loadRooms();
   }catch(e){showStatus(e.message,false);}
 }
 async function cancelBooking(id){
-  try{await apiFetch(`/bookings/${id}`,{method:'DELETE'});showStatus('✓ Бас тартылды.');loadBookings();loadRooms();}
-  catch(e){showStatus(e.message,false);}
+  try{
+    await apiFetch(`/bookings/${id}`,{method:'DELETE'});
+    showStatus('✓ Брондау бас тартылды');
+    loadBookings();loadRooms();
+  }catch(e){showStatus(e.message,false);}
 }
 async function register(){
   try{
-    const res=await apiFetch('/register',{method:'POST',body:JSON.stringify({username:document.getElementById('reg-name').value,email:document.getElementById('reg-email').value,password:document.getElementById('reg-pass').value})});
+    const res=await apiFetch('/register',{method:'POST',body:JSON.stringify({
+      username:document.getElementById('reg-name').value,
+      email:document.getElementById('reg-email').value,
+      password:document.getElementById('reg-pass').value
+    })});
     showStatus(`✓ Тіркелдіңіз! ID: ${res.id}`);
   }catch(e){showStatus(e.message,false);}
 }
 async function login(){
   try{
-    const res=await apiFetch('/login',{method:'POST',body:JSON.stringify({email:document.getElementById('login-email').value,password:document.getElementById('login-pass').value})});
+    const res=await apiFetch('/login',{method:'POST',body:JSON.stringify({
+      email:document.getElementById('login-email').value,
+      password:document.getElementById('login-pass').value
+    })});
     const box=document.getElementById('token-display');
     box.style.display='block';
-    box.innerHTML=`<b>✓ Кірдіңіз: ${res.username}</b><br><span style="color:var(--text2)">Token:</span> ${res.access_token}`;
+    box.innerHTML=`<strong>✓ Кірдіңіз: ${res.username}</strong><br/><span style="opacity:.6">Token: ${res.access_token}</span>`;
     const pill=document.getElementById('auth-pill');
     pill.classList.add('logged');
     document.getElementById('auth-label').textContent=res.username;
@@ -297,13 +523,18 @@ async function loadUsers(){
   try{
     const users=await apiFetch('/users');
     document.querySelector('#users-table tbody').innerHTML=users.length
-      ?users.map(u=>`<tr><td style="color:var(--text2)">#${u.id}</td><td><b>${u.username}</b></td><td style="color:var(--text2)">${u.email}</td><td><a href="#" onclick="showUserBookings(${u.id},'${u.username}');return false;">Брондауларды көру →</a></td></tr>`).join('')
-      :'<tr><td colspan="4" class="empty">Пайдаланушылар жоқ</td></tr>';
+      ?users.map(u=>`<tr>
+        <td class="id-num">${u.id}</td>
+        <td><strong>${u.username}</strong></td>
+        <td style="color:var(--muted)">${u.email}</td>
+        <td><a href="#" onclick="showUserBookings(${u.id},'${u.username}');return false;">Брондауларды көру →</a></td>
+      </tr>`).join('')
+      :'<tr><td colspan="4" class="empty"><span class="empty-icon">👤</span>Пайдаланушылар жоқ</td></tr>';
   }catch(e){showStatus(e.message,false);}
 }
 async function showUserBookings(uid,name){
   const data=await apiFetch(`/users/${uid}/bookings`);
-  showStatus(`${name}: ${data.bookings.length} брондау`);
+  showStatus(`${name}: ${data.bookings.length} брондау табылды`);
   document.getElementById('f-uid').value=uid;
   document.querySelectorAll('.tab')[1].click();
 }
